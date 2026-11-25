@@ -4,7 +4,16 @@ Version: 0.1.0
 Summary: Moteur de simulation d'arène de combat Dragon Ball Z
 Requires-Python: >=3.10
 Requires-Dist: numpy>=1.24.0
+Requires-Dist: pandas>=2.0.0
+Requires-Dist: requests>=2.31.0
+Requires-Dist: psutil
+Requires-Dist: joblib
+Requires-Dist: streamlit
+Requires-Dist: folium
+Requires-Dist: streamlit-folium
+Requires-Dist: plotly
 Provides-Extra: dev
 Requires-Dist: ruff>=0.1.0; extra == "dev"
 Requires-Dist: pytest>=8.0.0; extra == "dev"
 Requires-Dist: pytest-cov>=5.0.0; extra == "dev"
+Requires-Dist: requests-mock>=1.11.0; extra == "dev"

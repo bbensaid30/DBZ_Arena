@@ -79,3 +79,25 @@ def run_monte_carlo(
         "winrate": winrate,
         "turns_mean": total_turns / n_simulations,
     }
+
+def simulate_duel_step(
+    f1: ArenaFighter, f2: ArenaFighter, rng: np.random.Generator
+) -> tuple[int, int]:
+    """Simule un duel complet et retourne (winner_id, turns)."""
+    f1.reset_stats()
+    f2.reset_stats()
+    turns = 0
+    while not f1.is_defeated and not f2.is_defeated:
+        turns += 1
+        crit1 = 1.5 if rng.random() < 0.10 else 1.0
+        dmg1 = max(1, int(f1.execute_attack() * rng.uniform(0.85, 1.15) * crit1))
+        f2.take_damage(dmg1)
+        if f2.is_defeated:
+            return 1, turns
+
+        crit2 = 1.5 if rng.random() < 0.10 else 1.0
+        dmg2 = max(1, int(f2.execute_attack() * rng.uniform(0.85, 1.15) * crit2))
+        f1.take_damage(dmg2)
+        if f1.is_defeated:
+            return 2, turns
+    return (1 if not f1.is_defeated else 2), turns

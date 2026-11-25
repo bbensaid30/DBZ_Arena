@@ -1,0 +1,2 @@
+[console_scripts]
+zarena-app = zarena.cli:launch_app

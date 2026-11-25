@@ -23,3 +23,11 @@ class NotEnoughKiError(ZArenaError):
     """Spécialisation : levée lorsqu'une attaque spéciale manque de Ki."""
 
     pass
+
+
+
+#----------------------------------------------------------------------------------
+
+class DataFetchError(ZArenaError):
+    """Levée si l'API distante est injoignable ET qu'aucun cache local n'existe."""
+    pass

@@ -16,7 +16,7 @@ class ArenaFighter(ABC):
             raise InvalidStatError("Les points de vie doivent être > 0.")
         self.name = name
         self.max_hp = hp
-        self._hp = hp
+        self.hp = hp
 
     @property
     def hp(self) -> int:
@@ -27,9 +27,15 @@ class ArenaFighter(ABC):
         self._hp = max(0, min(value, self.max_hp))
 
     @property
-    @abstractmethod
+    def is_alive(self) -> bool:
+        return self.hp > 0
+    
+    @property
     def is_defeated(self) -> bool:
-        pass
+        return not self.is_alive
+
+    def reset_stats(self) -> None:
+        self.hp=self.max_hp
 
     @abstractmethod
     def execute_attack(self) -> int:
@@ -45,23 +51,13 @@ class BaseWarrior(ArenaFighter):
     def __init__(
         self, name: str, hp: int, ki: int = 50, attack_power: int = 30
     ) -> None:
-        if hp <= 0 or ki < 0 or attack_power <= 0:
+        super().__init__(name,hp)
+        if ki < 0 or attack_power <= 0:
             raise InvalidStatError("Statistiques initiales invalides.")
-        self.name = name
-        self.max_hp = hp
         self.max_ki = 100
-        self.attack_power = attack_power
-
-        self.hp = hp
         self.ki = ki
-
-    @property
-    def hp(self) -> int:
-        return self._hp
-
-    @hp.setter
-    def hp(self, value: int) -> None:
-        self._hp = max(0, min(value, self.max_hp))
+        self.attack_power = attack_power
+        self.race="Terrien"
 
     @property
     def ki(self) -> int:
@@ -72,20 +68,20 @@ class BaseWarrior(ArenaFighter):
         self._ki = max(0, min(value, self.max_ki))
 
     @property
-    def is_alive(self) -> bool:
-        return self._hp > 0
-
-    @property
-    def is_defeated(self) -> bool:
-        return not self.is_alive
+    def attack_power(self) -> int:
+        return self._attack_power
+    
+    @attack_power.setter
+    def attack_power(self, value: int) -> None:
+        self._attack_power = max(0, value)
 
     @property
     def in_critical_state(self) -> bool:
-        return self._hp <= self.max_hp // 4
+        return self.hp <= self.max_hp // 4
 
     @property
     def can_blast(self) -> bool:
-        return self._ki >= 20
+        return self.ki >= 20
 
     def recharge_ki(self, amount: int = 20) -> None:
         if amount <= 0:
@@ -105,6 +101,10 @@ class BaseWarrior(ArenaFighter):
             raise InvalidStatError("Les dégâts doivent être positifs.")
         self.hp -= amount
 
+    def reset_stats(self) -> None:
+        super().reset_stats()
+        self.ki=self.max_ki
+
 class SaiyanWarrior(BaseWarrior):
     """Guerrier Saiyan bénéficiant de la rage du combattant et d'attaques de Ki."""
 
@@ -116,12 +116,13 @@ class SaiyanWarrior(BaseWarrior):
         attack_power: int = 40,
         rage_multiplier: float = 1.5,
     ) -> None:
-        super().__init__(name=name, hp=hp, ki=ki, attack_power=attack_power)
+        super().__init__(name, hp, ki, attack_power)
         if rage_multiplier <= 1.0:
             raise InvalidStatError(
                 f"Le multiplicateur de rage doit être > 1.0 (reçu : {rage_multiplier})"
             )
         self.rage_multiplier = rage_multiplier
+        self.race="Saiyan"
 
     def compute_damage(self) -> int:
         if self.in_critical_state:
@@ -145,10 +146,7 @@ class Cyborg(ArenaFighter):
             raise InvalidStatError("Caractéristiques mécaniques invalides.")
         self.power = power
         self.shield = shield
-
-    @property
-    def is_defeated(self) -> bool:
-        return self.hp == 0
+        self.race="Cyborg"
 
     def execute_attack(self) -> int:
         return self.power

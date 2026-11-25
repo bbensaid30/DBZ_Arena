@@ -3,7 +3,6 @@ import pytest
 from zarena.exceptions import FighterFaintedError, InvalidStatError
 from zarena.warriors import BaseWarrior
 
-
 def test_base_warrior_creation_nominal() -> None:
     krilin = BaseWarrior(name="Krilin", hp=100, ki=50, attack_power=30)
     assert krilin.name == "Krilin"
